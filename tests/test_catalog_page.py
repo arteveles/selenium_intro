@@ -19,6 +19,8 @@ from data_storage import CTG_MENU_CMPS
 from data_storage import CTG_ASSERTED_SORT_TEXT
 from data_storage import CTG_SORT_TEXT
 
+"""Переход в каталог товаров из меню"""
+
 
 def test_visit_catalog_from_menu(driver):
     driver.get(url=URL_OPENCART_CATALOG)
@@ -29,6 +31,9 @@ def test_visit_catalog_from_menu(driver):
     time.sleep(3)
     desktop_header = driver.find_element(By.XPATH, CATALOG_HEADER)
     assert desktop_header.text == CATALOG_HEADER_TEXT
+
+
+"""Добавление в избранные"""
 
 
 def test_catalog_add_to_favourite(driver):
@@ -43,6 +48,9 @@ def test_catalog_add_to_favourite(driver):
     assert assertion_text.text == CTG_ASSERT_LGN
 
 
+"""Сравнение наименований товара"""
+
+
 def test_catalog_compare(driver):
     driver.get(url=URL_OPENCART_CATALOG)
     time.sleep(1)
@@ -51,6 +59,9 @@ def test_catalog_compare(driver):
     time.sleep(2)
     assertion_header = driver.find_element(By.XPATH, CTG_HEADER_COMPARE)
     assert assertion_header.text == CTG_HEADER_CMP_ASSERT
+
+
+"""Сравнение количества товаров в меню и на странице товаров"""
 
 
 def test_compare_count_prod(driver):
@@ -64,6 +75,9 @@ def test_compare_count_prod(driver):
     time.sleep(2)
     count_items_in_page = driver.find_elements(By.XPATH, CTG_CNT_ITEMS)
     assert str(len(count_items_in_page)) == count_of_menu_items
+
+
+"""Проверка наличия сортировки"""
 
 
 def test_sort(driver):

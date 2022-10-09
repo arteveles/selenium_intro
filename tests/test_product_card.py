@@ -8,8 +8,10 @@ from data_storage import EL5_CARD_IMAGE
 from data_storage import EL2_ASSERTION_TEXT
 from data_storage import EL4_COMPARE_BTN
 
+"""Проверка карточки товара на наличие кнопок и изображения"""
 
-def test_product_card_fixture(driver):
+
+def test_product_card(driver):
     driver.get(url=URL_PRODUCT_CARD)
     product_card = driver.find_element(By.XPATH, EL1_PRODUCT_CARD)
     assert product_card

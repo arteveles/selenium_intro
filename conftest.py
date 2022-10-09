@@ -2,7 +2,8 @@ import pytest
 import os
 from selenium import webdriver
 from data_storage import URL_OPENCART
-from selenium.webdriver import ChromeOptions, FirefoxOptions
+from selenium.webdriver import ChromeOptions
+from selenium.webdriver import FirefoxOptions
 
 
 def pytest_addoption(parser):
@@ -32,7 +33,6 @@ def driver(request):
     drivers = request.config.getoption("--drivers")
     headless = request.config.getoption("--headless")
     base_url = request.config.getoption("--base_url")
-
     if browser_name == "firefox":
         options = FirefoxOptions()
         if headless:
@@ -47,10 +47,7 @@ def driver(request):
         _driver = webdriver.Opera(executable_path=os.path.expanduser(f"{drivers}/operadriver"))
     else:
         raise ValueError(f"Browser {browser_name} is not supported")
-
     _driver.maximize_window()
     _driver.base_url = base_url
-
     yield _driver
-
     _driver.close()
