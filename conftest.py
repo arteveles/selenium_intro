@@ -1,56 +1,51 @@
 import pytest
 import os
 from selenium import webdriver
-from data_storage import URL_OPENCART
-from selenium.webdriver import ChromeOptions, FirefoxOptions
+
+DRIVERS = os.path.expanduser("~/dev/driver")
 
 
 def pytest_addoption(parser):
-    """
-    Выбор браузера. По умолчанию, если не передан аргумент в командную строку - запустится FireFox
-    """
+    """Аргумент базовой ссылки сайта"""
     parser.addoption(
-        "--browser", default="firefox", help="firefox browser"
+        "--url", "-U", default="http://10.0.2.15:8081/"
     )
+
+    """Аргумент выбора браузера"""
     parser.addoption(
-        "--drivers", default=os.path.expanduser("~/dev/driver/")
-    )
-    """
-    Отработка тестов без открытия окна браузера
-    """
-    parser.addoption(
-        "--headless", action="store_true"
-    )
-    parser.addoption(
-        "--base_url", default=URL_OPENCART
+        "--browser_select", "-B", default="firefox"
     )
 
 
 @pytest.fixture
-def driver(request):
-    browser_name = request.config.getoption("--browser")
-    drivers = request.config.getoption("--drivers")
-    headless = request.config.getoption("--headless")
-    base_url = request.config.getoption("--base_url")
+def browser(request):
+    url = request.config.getoption("--url")
+    browser_select = request.config.getoption("--browser_select")
 
-    if browser_name == "firefox":
-        options = FirefoxOptions()
-        if headless:
-            options.headless = True
-        _driver = webdriver.Firefox(executable_path=os.path.expanduser(f"{drivers}/geckodriver"), options=options)
-    elif browser_name == "chrome":
-        options = ChromeOptions()
-        if headless:
-            options.headless = True
-        _driver = webdriver.Chrome(executable_path=os.path.expanduser(f"{drivers}/chromedriver"), options=options)
-    elif browser_name == "opera":
-        _driver = webdriver.Opera(executable_path=os.path.expanduser(f"{drivers}/operadriver"))
-    else:
-        raise ValueError(f"Browser {browser_name} is not supported")
+    # https://www.selenium.dev/documentation/en/webdriver/page_loading_strategy/
+    common_caps = {"pageLoadStrategy": "none"}
 
-    _driver.maximize_window()
-    _driver.base_url = base_url
+    if browser_select == "firefox":
+        driver = webdriver.Firefox(
+            executable_path=f"{DRIVERS}/geckodriver",
+            desired_capabilities=common_caps
+        )
 
-    yield _driver
+    elif browser_select == "chrome":
+        driver = webdriver.Chrome(
+            executable_path=f"{DRIVERS}/chromedriver",
+            desired_capabilities=common_caps
+        )
 
-    _driver.close()
+    elif browser_select == "opera":
+        driver = webdriver.Opera(
+            executable_path=f"{DRIVERS}/operadriver",
+            desired_capabilities=common_caps
+        )
+
+    request.addfinalizer(driver.quit)
+
+    driver.maximize_window()
+    driver.get(url)
+    driver.implicitly_wait(5)
+    return driver
