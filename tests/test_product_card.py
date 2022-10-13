@@ -1,6 +1,8 @@
+import allure
 from page_objects.page_elements import ProductCard
 
 
+@allure.title(f"Проверка наличия элементов в карточке товара.")
 def test_product_card(browser):
     pc = ProductCard.ProductCard(browser)
     pc.product_card_name()

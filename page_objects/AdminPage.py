@@ -1,5 +1,7 @@
 import time
 
+import allure
+
 from test_data.alert_values import accept
 from page_objects.BasePage import BasePage
 from selenium.webdriver.common.by import By
@@ -23,12 +25,12 @@ class AdminPage(BasePage):
     CHKBOX = (By.XPATH, "//input[@type='checkbox']")
     DEL_BTN = (By.XPATH, "//button[@class='btn btn-danger']")
 
-    # //tbody/tr/td[@class='text-left']
-
+    @allure.step(f"Переход на вкладку каталога товаров. XPATH = {PRODUCT_ITEM}")
     def select_catalog_product_item(self):
         self.element_in_element(self.NAV_MENU, self.CATALOG_ITEM).click()
         self.element(self.PRODUCT_ITEM).click()
 
+    @allure.step(f"Заполнение полей для добавления нового продукта.")
     def add_new_product(self, product_name):
         self.element(self.ADD_BTN).click()
         self._input(self.element(self.PROD_NAME_INP), product_name)
@@ -38,13 +40,16 @@ class AdminPage(BasePage):
         self._input(self.element(self.MODEL_INP), product_name)
         self.element(self.SAVE_BTN).click()
 
+    @allure.step(f"Уведомление об успешном создании товара.")
     def alert_success_add(self):
         self.element(self.ALERT_SUCCESS)
 
+    @allure.step(f"Проверка наличия созданного товара.")
     def verify_product_add(self, product_name):
         while product_name != self.element(self.TABLE_ROW).text:
             self.element(self.PAGIN_LEFT).click()
 
+    @allure.step(f"Удаление товара.")
     def remove_product(self, product_name):
         while product_name != self.element(self.TABLE_ROW).text:
             self.element(self.PAGIN_LEFT).click()
@@ -54,5 +59,6 @@ class AdminPage(BasePage):
         else:
             ValueError("Тестовый продукт не создан")
 
+    @allure.step(f"Переключение на алерт и нажатие на ОК.")
     def alert_accept(self):
         self.switch_to_alert_frame(accept())
