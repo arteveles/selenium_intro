@@ -1,6 +1,8 @@
 import allure
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from page_objects.BasePage import BasePage
+
 
 
 class AdminLoginPage(BasePage):
@@ -12,10 +14,19 @@ class AdminLoginPage(BasePage):
 
     @allure.step(f"Авторизация в админке.")
     def authorization(self, username, password):
-        self._input(self.element(self.INPUT_USERN), username)
-        self._input(self.element(self.INPUT_PASS), password)
-        self.click(self.element(self.LOG_BTN))
-        return self
+        with allure.step("Ввод логина и пароля:"):
+            try:
+                self._input(self.element(self.INPUT_USERN), username)
+                self._input(self.element(self.INPUT_PASS), password)
+                self.click(self.element(self.LOG_BTN))
+                return self
+            except NoSuchElementException as e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
     @allure.step(f"Не авторизован? Alert XPATH = {ALERT_TEXT}")
     def validate_no_authorization(self):

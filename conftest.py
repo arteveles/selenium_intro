@@ -1,7 +1,9 @@
+import json
+
+import allure
 import pytest
 import os
 from selenium import webdriver
-
 
 DRIVERS = os.path.expanduser("~/dev/driver")
 
@@ -43,6 +45,12 @@ def browser(request):
             executable_path=f"{DRIVERS}/operadriver",
             desired_capabilities=common_caps
         )
+
+    allure.attach(
+        name=driver.session_id,
+        body=json.dumps(driver.capabilities),
+        attachment_type=allure.attachment_type.JSON
+    )
 
     request.addfinalizer(driver.quit)
 
