@@ -48,7 +48,7 @@ def browser(request):
 
     allure.attach(
         name=driver.session_id,
-        body=json.dumps(driver.capabilities),
+        body=json.dumps(driver.capabilities, indent=4),
         attachment_type=allure.attachment_type.JSON
     )
 

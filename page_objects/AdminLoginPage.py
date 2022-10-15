@@ -4,15 +4,24 @@ from selenium.webdriver.common.by import By
 from page_objects.BasePage import BasePage
 
 
-
 class AdminLoginPage(BasePage):
     INPUT_USERN = (By.XPATH, "//input[@name='username']")
     INPUT_PASS = (By.XPATH, "//input[@name='password']")
     LOG_BTN = (By.XPATH, "//button[@type='submit']")
     LOGOUT_BTN = (By.XPATH, "//span[@class='hidden-xs hidden-sm hidden-md']")
     ALERT_TEXT = (By.XPATH, "//div[@class='alert alert-danger alert-dismissible']")
+    path = "/admin"
+    url = "http://10.0.2.15:8081/"
 
-    @allure.step(f"Авторизация в админке.")
+    def open(self):
+        with allure.step(f"Прикрепил HTML. Перехожу на страницу {self.url + self.path}"):
+            allure.attach(
+                body=self.driver.page_source,
+                name="Attach_with_HTML_type",
+                attachment_type=allure.attachment_type.HTML
+            )
+            self.driver.get(self.url + self.path)
+
     def authorization(self, username, password):
         with allure.step("Ввод логина и пароля:"):
             try:
@@ -28,11 +37,27 @@ class AdminLoginPage(BasePage):
                 )
                 raise AssertionError(e.msg)
 
-    @allure.step(f"Не авторизован? Alert XPATH = {ALERT_TEXT}")
     def validate_no_authorization(self):
-        self.element(self.ALERT_TEXT)
+        with allure.step(f"Не авторизован? Alert XPATH = {self.ALERT_TEXT}"):
+            try:
+                self.element(self.ALERT_TEXT)
+            except NoSuchElementException as e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
-    @allure.step(f"Клик на кнопку разлогиниться. XPATH = {LOGOUT_BTN}")
     def logout(self):
-        logout_btn = self.element(self.LOGOUT_BTN)
-        logout_btn.click()
+        with allure.step(f"Клик на кнопку разлогиниться. XPATH = {self.LOGOUT_BTN}"):
+            try:
+                logout_btn = self.element(self.LOGOUT_BTN)
+                logout_btn.click()
+            except NoSuchElementException as e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)

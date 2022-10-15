@@ -1,5 +1,5 @@
 import allure
-
+from selenium.common.exceptions import NoSuchElementException as e
 from page_objects.BasePage import BasePage
 from selenium.webdriver.common.by import By
 
@@ -14,24 +14,56 @@ class CatalogPage(BasePage):
     PROD_NAME = (By.XPATH, "//div[@class='product-thumb']//h4/a")
     CATALOG_HEADER_TEXT = "Desktops"
 
-    @allure.step(f"Элемент {CATALOG_HEADER} имеет заголовок {CATALOG_HEADER_TEXT}")
     def verify_header_of_page(self):
-        desktop_header = self.element(self.CATALOG_HEADER)
-        assert desktop_header.text == self.CATALOG_HEADER_TEXT
+        with allure.step(f"Элемент {self.CATALOG_HEADER} имеет заголовок {self.CATALOG_HEADER_TEXT}"):
+            try:
+                desktop_header = self.element(self.CATALOG_HEADER)
+                assert desktop_header.text == self.CATALOG_HEADER_TEXT
+            except e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
-    @allure.step(f"Клик на кнопку: добавить в список желаний. Селектор = {CATALOG_BTN_ADD_TO_FVT} ")
     def add_to_wish_list(self):
-        self.element(self.CATALOG_BTN_ADD_TO_FVT).click()
+        with allure.step(f"Клик на кнопку: добавить в список желаний. Селектор = {self.CATALOG_BTN_ADD_TO_FVT} "):
+            try:
+                self.element(self.CATALOG_BTN_ADD_TO_FVT).click()
+            except e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
-    @allure.step(f"Логинюсь из уведомления, запрашивающего авторизацию.")
     def login_from_alert(self, email, password):
-        self.element(self.LOGIN_LINK).click()
-        self._input(self.element(self.EMAIL_INP), email)
-        self._input(self.element(self.PASSW_INP), password)
-        self.element(self.LOGIN_BTN).click()
-        return self
+        with allure.step(f"Логинюсь из уведомления, запрашивающего авторизацию."):
+            try:
+                self.element(self.LOGIN_LINK).click()
+                self._input(self.element(self.EMAIL_INP), email)
+                self._input(self.element(self.PASSW_INP), password)
+                self.element(self.LOGIN_BTN).click()
+                return self
+            except e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
-    @allure.step(f"Сверяю имя продукта")
     def verify_cart_product_searched(self, product_name_value):
-        product_name = self.element(self.PROD_NAME).text
-        assert product_name == product_name_value
+        with allure.step(f"Сверяю имя продукта"):
+            try:
+                product_name = self.element(self.PROD_NAME).text
+                assert product_name == product_name_value
+            except e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
