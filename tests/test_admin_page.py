@@ -7,8 +7,7 @@ from test_data.users import get_valid_user, get_invalid_user
 from test_data.product_values import product_name
 
 
-@allure.title(f"Валидация авторизации.")
-@allure.testcase('https://pypi.org/project/allure-pytest/', 'Test_case_name')
+@allure.testcase('https://pypi.org/project/allure-pytest/', 'Валидация авторизации.')
 def test_valid_registration(browser):
     alp = AdminLoginPage(browser)
     alp.open()

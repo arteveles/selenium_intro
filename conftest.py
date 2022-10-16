@@ -1,3 +1,4 @@
+import datetime
 import json
 import logging
 
@@ -10,6 +11,8 @@ from selenium import webdriver
 DRIVERS = os.path.expanduser("~/dev/driver")
 
 
+# """Конфигурируем логгер глобально и наблюдаем сайдэффект"""
+# logging.basicConfig(level=logging.INFO, filename="logs/test.log")
 def pytest_addoption(parser):
     """Аргумент базовой ссылки сайта"""
     parser.addoption(
@@ -37,51 +40,17 @@ def browser(request):
     executor = request.config.getoption("--executor")
     log_level = request.config.getoption("--log_level")
 
-    class MyLogger(AbstractEventListener):
-        """Создается новый логгер, и берется имя теста который сейчас выполняеся.
-        Чтоб на отдельный тест создавался отдельный лог."""
-        logger = logging.getLogger(request.node.name)
-        logger.setLevel(logging.INFO)
-        ch = logging.FileHandler(filename=f"logs/{request.node.name}.log")
-        ch.setLevel(logging.DEBUG)
-        ch.setFormatter(logging.Formatter('%(asctime)s:%(name)s:%(levelname)s: %(message)s'))
 
-        def before_navigate_to(self, url, driver):
-            self.logger.info(f"I`m navigate to {url} and {driver.title}")
+    """Создается новый логгер, и берется имя теста который сейчас выполняеся.
+    Чтоб на отдельный тест создавался отдельный лог."""
+    logger = logging.getLogger(request.node.name)
+    file_handler = logging.FileHandler(filename=f"logs/{request.node.name}.log")
+    file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+    logger.addHandler(file_handler)
+    logger.setLevel(level=log_level)
 
-        def after_navigate_to(self, url, driver):
-            self.logger.info(f"I`m on {url}")
+    logger.info("===> Test {} started at {}".format(request.node.name, datetime.datetime.now()))
 
-        def before_navigate_back(self, driver):
-            self.logger.info(f"I`m navigating back")
-
-        def after_navigate_back(self, driver):
-            self.logger.info(f"I`m back")
-
-        def before_find(self, by, value, driver):
-            self.logger.info(f"I`m looking for '{value}' with '{by}'")
-
-        def before_click(self, element, driver):
-            self.logger.info(f"I`m clicking {element}")
-
-        def after_click(self, element, driver):
-            self.logger.info(f"I`ve clicked {element}")
-
-        def before_execute_script(self, script, driver):
-            self.logger.info(f"I`m executing {script}")
-
-        def after_execute_script(self, script, driver):
-            self.logger.info(f"I`ve executed {script}")
-
-        def before_quit(self, driver):
-            self.logger.info(f"I`m getting ready to terminate {driver}")
-
-        def after_quit(self, driver):
-            self.logger.info(f"Driver Quit")
-
-        # def on_exception(self, exception, driver):
-        #     self.logger.error(f'Oops i got {exception}')
-        #     driver.save_screenshot(f'logs/{driver.session_id}.png')
 
     # https://www.selenium.dev/documentation/en/webdriver/page_loading_strategy/
     common_caps = {"pageLoadStrategy": "none"}
@@ -110,18 +79,21 @@ def browser(request):
             desired_capabilities={"browserName": browser}
         )
 
-    driver = EventFiringWebDriver(driver, MyLogger())
-    driver.test_name = request.node.name
-    driver.log_level = log_level
-
     allure.attach(
         name=driver.session_id,
         body=json.dumps(driver.capabilities, indent=4),
         attachment_type=allure.attachment_type.JSON
     )
 
+    driver.logger = logger
+    driver.test_name = request.node.name
+    driver.log_level = log_level
+
+    logger.info("Browser:{}".format(browser, driver.desired_capabilities))
+
     def fin():
         driver.quit()
+        logger.info("===> Test {} started at {}".format(request.node.name, datetime.datetime.now()))
 
     request.addfinalizer(fin)
 
