@@ -37,12 +37,14 @@ def browser(request):
     executor = request.config.getoption("--executor")
     log_level = request.config.getoption("--log_level")
 
-    class MyListener(AbstractEventListener):
+    class MyLogger(AbstractEventListener):
+        """Создается новый логгер, и берется имя теста который сейчас выполняеся.
+        Чтоб на отдельный тест создавался отдельный лог."""
         logger = logging.getLogger(request.node.name)
         logger.setLevel(logging.INFO)
         ch = logging.FileHandler(filename=f"logs/{request.node.name}.log")
         ch.setLevel(logging.DEBUG)
-        ch.setFormatter(logging.Formatter('%(name)s:%(levelname)s: %(message)s'))
+        ch.setFormatter(logging.Formatter('%(asctime)s:%(name)s:%(levelname)s: %(message)s'))
 
         def before_navigate_to(self, url, driver):
             self.logger.info(f"I`m navigate to {url} and {driver.title}")
@@ -74,7 +76,12 @@ def browser(request):
         def before_quit(self, driver):
             self.logger.info(f"I`m getting ready to terminate {driver}")
 
-        # def after_quit(self, driver):
+        def after_quit(self, driver):
+            self.logger.info(f"Driver Quit")
+
+        # def on_exception(self, exception, driver):
+        #     self.logger.error(f'Oops i got {exception}')
+        #     driver.save_screenshot(f'logs/{driver.session_id}.png')
 
     # https://www.selenium.dev/documentation/en/webdriver/page_loading_strategy/
     common_caps = {"pageLoadStrategy": "none"}
@@ -97,13 +104,26 @@ def browser(request):
             desired_capabilities=common_caps
         )
 
+    else:
+        driver = webdriver.Remote(
+            command_executor="http://{}:4444/wd/hub".format(executor),
+            desired_capabilities={"browserName": browser}
+        )
+
+    driver = EventFiringWebDriver(driver, MyLogger())
+    driver.test_name = request.node.name
+    driver.log_level = log_level
+
     allure.attach(
         name=driver.session_id,
         body=json.dumps(driver.capabilities, indent=4),
         attachment_type=allure.attachment_type.JSON
     )
 
-    request.addfinalizer(driver.quit)
+    def fin():
+        driver.quit()
+
+    request.addfinalizer(fin)
 
     driver.maximize_window()
     driver.get(url)
