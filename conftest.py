@@ -1,5 +1,7 @@
 import json
+import logging
 
+from selenium.webdriver.support.events import AbstractEventListener, EventFiringWebDriver
 import allure
 import pytest
 import os
@@ -19,11 +21,60 @@ def pytest_addoption(parser):
         "--browser_select", "-B", default="firefox"
     )
 
+    parser.addoption(
+        "--executor", action="store", default="127.0.0.1"
+    )
+
+    parser.addoption(
+        "--log_level", action="store", default="DEBUG"
+    )
+
 
 @pytest.fixture
 def browser(request):
     url = request.config.getoption("--url")
     browser_select = request.config.getoption("--browser_select")
+    executor = request.config.getoption("--executor")
+    log_level = request.config.getoption("--log_level")
+
+    class MyListener(AbstractEventListener):
+        logger = logging.getLogger(request.node.name)
+        logger.setLevel(logging.INFO)
+        ch = logging.FileHandler(filename=f"logs/{request.node.name}.log")
+        ch.setLevel(logging.DEBUG)
+        ch.setFormatter(logging.Formatter('%(name)s:%(levelname)s: %(message)s'))
+
+        def before_navigate_to(self, url, driver):
+            self.logger.info(f"I`m navigate to {url} and {driver.title}")
+
+        def after_navigate_to(self, url, driver):
+            self.logger.info(f"I`m on {url}")
+
+        def before_navigate_back(self, driver):
+            self.logger.info(f"I`m navigating back")
+
+        def after_navigate_back(self, driver):
+            self.logger.info(f"I`m back")
+
+        def before_find(self, by, value, driver):
+            self.logger.info(f"I`m looking for '{value}' with '{by}'")
+
+        def before_click(self, element, driver):
+            self.logger.info(f"I`m clicking {element}")
+
+        def after_click(self, element, driver):
+            self.logger.info(f"I`ve clicked {element}")
+
+        def before_execute_script(self, script, driver):
+            self.logger.info(f"I`m executing {script}")
+
+        def after_execute_script(self, script, driver):
+            self.logger.info(f"I`ve executed {script}")
+
+        def before_quit(self, driver):
+            self.logger.info(f"I`m getting ready to terminate {driver}")
+
+        # def after_quit(self, driver):
 
     # https://www.selenium.dev/documentation/en/webdriver/page_loading_strategy/
     common_caps = {"pageLoadStrategy": "none"}
