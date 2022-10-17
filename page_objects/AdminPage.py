@@ -39,6 +39,7 @@ class AdminPage(BasePage):
     def add_new_product(self, product_name):
         with allure.step(f"Заполнение полей для добавления нового продукта."):
             try:
+                self.logger.info(f"Find add_button {self.ADD_BTN}")
                 self.element(self.ADD_BTN).click()
                 self._input(self.element(self.PROD_NAME_INP), product_name)
                 self._input(self.element(self.DESCR_PROD_TEXT_AREA), product_name)
@@ -57,6 +58,7 @@ class AdminPage(BasePage):
     def alert_success_add(self):
         with allure.step(f"Уведомление об успешном создании товара."):
             try:
+                self.logger.info(f"Find Allert success: {self.ALERT_SUCCESS}")
                 self.element(self.ALERT_SUCCESS)
             except NoSuchElementException as e:
                 allure.attach(
@@ -69,6 +71,7 @@ class AdminPage(BasePage):
     def verify_product_add(self, product_name):
         with allure.step(f"Проверка наличия созданного товара."):
             try:
+                self.logger.info(f"Scroll pages until element '{product_name}' was not found")
                 while product_name != self.element(self.TABLE_ROW).text:
                     self.element(self.PAGIN_LEFT).click()
             except NoSuchElementException as e:
@@ -82,6 +85,7 @@ class AdminPage(BasePage):
     def remove_product(self, product_name):
         with allure.step(f"Удаление товара."):
             try:
+                self.logger.info(f"Scroll pages until element '{product_name}' was not deleted")
                 while product_name != self.element(self.TABLE_ROW).text:
                     self.element(self.PAGIN_LEFT).click()
                 if self.element(self.TABLE_ROW).text == product_name:
@@ -100,6 +104,7 @@ class AdminPage(BasePage):
     def alert_accept(self):
         with allure.step(f"Переключение на алерт и нажатие на ОК."):
             try:
+                self.logger.info(f"Switch to allert and accept.")
                 self.switch_to_alert_frame(accept())
             except NoSuchElementException as e:
                 allure.attach(

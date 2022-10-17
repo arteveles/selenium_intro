@@ -1,3 +1,4 @@
+import json
 import logging
 
 import allure
@@ -15,13 +16,30 @@ class BasePage:
         self.driver = driver
         self.wait = WebDriverWait(driver, wait)
         self.action = ActionChains(driver)
+        self._logger_config()
 
+    def _logger_config(self):
         self.logger = logging.getLogger(type(self).__name__)
         file_handler = logging.FileHandler(f"logs/{self.driver.test_name}.log")
         file_handler.setFormatter(logging.Formatter('%(name)s - %(levelname)s - %(message)s'))
         self.logger.addHandler(file_handler)
         self.logger.setLevel(level=self.driver.log_level)
 
+    def performance_log(self):
+        with allure.step(f"Запись логов браузера в файл performance.json"):
+            performance_logs = []
+            for line in self.driver.get_log("performance"):
+                performance_logs.append(line)
+            with open("performance.json", "w+") as f:
+                f.write(json.dumps(performance_logs))
+    def browser_log(self):
+        with allure.step(f"Запись логов браузера в файл browser.json. Level WARNING and ERROR"):
+            browser_logs = []
+            for line in self.driver.get_log("browser"):
+                browser_logs.append(line)
+            with open("logs/browser.json", "w+") as f:
+                f.write(json.dumps(browser_logs))
+            f.close()
     def click(self, element):
         with allure.step(f"Клик на элемент."):
             try:
