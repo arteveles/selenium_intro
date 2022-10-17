@@ -35,33 +35,11 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture
-def proxy_server(request):
-    server = Server("browsermob-proxy/bin/browsermob-proxy")
-    server.start()
-    client = Client("http://10.0.2.15:8081/")
-
-    server.create_proxy()
-    request.addfinalizer(server.stop)
-    client.new_har()
-    return client
-
-
-@pytest.fixture
-def browser(request, proxy_server):
+def browser(request):
     url = request.config.getoption("--url")
     browser_select = request.config.getoption("--browser_select")
     executor = request.config.getoption("--executor")
     log_level = request.config.getoption("--log_level")
-
-    """Установка прокси сервера"""
-    caps = {}
-    proxy_server.add_to_webdriver_capabilities(caps)
-    options = webdriver.ChromeOptions()
-    driver = webdriver.Chrome(
-        executable_path=f"{DRIVERS}/chromedriver",
-        options=options,
-        desired_capabilities=caps
-    )
 
     """Создается новый логгер, и берется имя теста который сейчас выполняеся.
     Чтоб на отдельный тест создавался отдельный лог."""
@@ -114,7 +92,6 @@ def browser(request, proxy_server):
         attachment_type=allure.attachment_type.JSON
     )
 
-    driver.proxy = proxy_server
     driver.logger = logger
     driver.test_name = request.node.name
     driver.log_level = log_level
@@ -122,8 +99,6 @@ def browser(request, proxy_server):
     logger.info("Browser:{}".format(browser, driver.desired_capabilities))
 
     def fin():
-        # dump_log_to_json(driver.proxy.har['log'], f"{request.node.name}.json") # раскомментировать, если потребуется спроксировать трафик
-        # driver.proxy.close()
         driver.quit()
         logger.info("===> Test {} passed at {}".format(request.node.name, datetime.datetime.now()))
 
@@ -133,11 +108,3 @@ def browser(request, proxy_server):
     driver.get(url)
     driver.implicitly_wait(5)
     return driver
-
-
-def dump_log_to_json(har_log, file_name):
-    logs = []
-    with open(file_name, "w+") as f:
-        for i, el in enumerate(har_log["entries"], start=1):
-            logs.append({i: {"request": el["request"], "response": el["response"]}})
-        f.write(json.dumps(logs))
