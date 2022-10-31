@@ -1,3 +1,5 @@
+import allure
+from selenium.common.exceptions import NoSuchElementException as e
 from page_objects.BasePage import BasePage
 from selenium.webdriver.common.by import By
 from test_data.product_values import now
@@ -15,32 +17,104 @@ class RegistrationPage(BasePage):
     SUBMIT_BTN = (By.XPATH, "//input[@type='submit']")
 
     def input_name(self):
-        name = f"test_{now}"
-        self._input(self.element(self.FN_INPUT), name)
+        with allure.step(f"Ввод имени."):
+            try:
+                name = f"test_{now}"
+                self._input(self.element(self.FN_INPUT), name)
+            except e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
     def input_last_name(self):
-        name = f"test_{now}"
-        self._input(self.element(self.LN_INPUT), name)
+        with allure.step(f"Ввод фамилии."):
+            try:
+                name = f"test_{now}"
+                self._input(self.element(self.LN_INPUT), name)
+            except e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
     def input_mail(self):
-        name = f"test_{now}"
-        domen = "@gmail.com"
-        self._input(self.element(self.MAIL_INPUT), name + domen)
+        with allure.step(f"Ввод мэила."):
+            try:
+                name = f"test_{now}"
+                domen = "@gmail.com"
+                self._input(self.element(self.MAIL_INPUT), name + domen)
+            except e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
     def input_phone(self):
-        phone = f"+79999999999"
-        self._input(self.element(self.PHONE_INPUT), phone)
+        with allure.step(f"Ввод номера."):
+            try:
+                phone = f"+79999999999"
+                self._input(self.element(self.PHONE_INPUT), phone)
+            except e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
     def input_pass_and_confirm(self):
-        passw = f"test_{now}"
-        self._input(self.element(self.PASS_INPUT), passw)
-        self._input(self.element(self.CONFIRM_INPUT), passw)
+        with allure.step(f"Ввод пароля. Подтверждение пароля."):
+            try:
+                passw = f"test_{now}"
+                self._input(self.element(self.PASS_INPUT), passw)
+                self._input(self.element(self.CONFIRM_INPUT), passw)
+            except e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
     def newsletter(self):
-        self.element(self.RADIOBTN_NO).click()
+        with allure.step(f"Не подписываемся на рассылку новостей."):
+            try:
+                self.element(self.RADIOBTN_NO).click()
+            except e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
     def privacy(self):
-        self.element(self.PRIVACY_CHK).click()
+        with allure.step(f"Соглашаемся с политикой конфиденциальности."):
+            try:
+                self.element(self.PRIVACY_CHK).click()
+            except e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
     def submit(self):
-        self.element(self.SUBMIT_BTN).click()
+        with allure.step(f"Нажиаем кнопку подтвердить."):
+            try:
+                self.element(self.SUBMIT_BTN).click()
+            except e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)

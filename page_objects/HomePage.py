@@ -1,8 +1,7 @@
+import allure
 from selenium.webdriver.common.by import By
 from page_objects.BasePage import BasePage
-from page_objects.page_elements.SearchElement import SearchElement
-from test_data.search_values import get_searched_item
-
+from selenium.common.exceptions import NoSuchElementException as e
 import re
 
 
@@ -22,32 +21,96 @@ class HomePage(BasePage):
     MENU_LIST = (By.XPATH, "//ul[@class='nav navbar-nav']/li")
 
     def click_registrate(self):
-        self.element(self.MYAKK_SELECT).click(),
-        self.element(self.REG_BTN).click()
+        with allure.step(f"Клик на кнопку регистрации. XPATH = {self.REG_BTN}"):
+            try:
+                self.element(self.MYAKK_SELECT).click()
+                self.element(self.REG_BTN).click()
+            except e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
     def change_currency_on_gbp(self):
-        self.element(self.CURRENCY).click()
-        self.element(self.CURRENCY_GBP).click()
+        with allure.step(
+                f"Смена отображения цены товара в валюте. 1_XPATH = {self.CURRENCY}, 2_XPATH = {self.CURRENCY_GBP}"):
+            try:
+                self.element(self.CURRENCY).click()
+                self.element(self.CURRENCY_GBP).click()
+            except e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
     def verify_currency_changed_on_gbp(self):
-        assert self.element(self.VERIFY_GBP)
-        assert self.element(self.VERIFY_GBP_2)
+        with allure.step(f"Проверка смены цены товара на валюту."):
+            try:
+                assert self.element(self.VERIFY_GBP)
+                assert self.element(self.VERIFY_GBP_2)
+            except e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
     def select_all_desktops(self):
-        self.element(self.MENU_DESKTOP).click()
-        self.element(self.CATALOG_SEE_ALL).click()
+        with allure.step(f"Выбор списка компов из менюшки"):
+            try:
+                self.element(self.MENU_DESKTOP).click()
+                self.element(self.CATALOG_SEE_ALL).click()
+            except e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
     def check_count_of_monitors(self):
-        self.element(self.MENU_COMPONENTS).click()
-        num = re.findall(r"\d+", self.element(self.CTG_COMPARE_ITEMS).text)
-        self.element(self.CTG_COMPARE_ITEMS).click()
-        count_prod = self.elements(self.COUNT_PRODUCTS)
-        assert str(len(count_prod)) == num[0]
+        with allure.step(f"Сверка количества мониторов: значения одинаковы в менюшке и на странице каталога товара."):
+            try:
+                self.element(self.MENU_COMPONENTS).click()
+                num = re.findall(r"\d+", self.element(self.CTG_COMPARE_ITEMS).text)
+                self.element(self.CTG_COMPARE_ITEMS).click()
+                count_prod = self.elements(self.COUNT_PRODUCTS)
+                assert str(len(count_prod)) == num[0]
+            except e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
     def validate_title(self):
-        title = self.driver.title
-        assert title == self.TITLE
+        with allure.step(f"Валидация наименования."):
+            try:
+                title = self.driver.title
+                assert title == self.TITLE
+            except e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
     def validate_count_menu_items(self):
-        count_menu_items = len(self.elements(self.MENU_LIST))
-        assert count_menu_items == 8
+        with allure.step(f"Валидация количества пунктов меню."):
+            try:
+                count_menu_items = len(self.elements(self.MENU_LIST))
+                assert count_menu_items == 8
+            except e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)

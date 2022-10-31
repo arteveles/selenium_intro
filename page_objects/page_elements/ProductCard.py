@@ -1,3 +1,5 @@
+import allure
+from selenium.common.exceptions import NoSuchElementException
 from page_objects.BasePage import BasePage
 from selenium.webdriver.common.by import By
 
@@ -13,22 +15,76 @@ class ProductCard(BasePage):
     EL5_CARD_IMAGE = (By.XPATH, "//div[@class='image']/a/img[@class='img-responsive']")
 
     def open_product_card(self):
-        product_card = self.element(self.PRODUCT_CARD)
-        self.click(product_card)
+        with allure.step(f"Клик по карточке продукта. XPATH = {self.PRODUCT_CARD}"):
+            try:
+                product_card = self.element(self.PRODUCT_CARD)
+                self.click(product_card)
+            except NoSuchElementException as e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
     def product_card_name(self):
-        assert self.element(self.PRODUCT_CARD_NAME).location_once_scrolled_into_view
+        with allure.step(f"Скролл до поля видимости карточки XPATH = {self.PRODUCT_CARD_NAME}"):
+            try:
+                assert self.element(self.PRODUCT_CARD_NAME).location_once_scrolled_into_view
+            except NoSuchElementException as e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
     def product_card_add_to_cart(self):
-        add_btn = self.element(self.EL2_ADD_BTN).text.lower()
-        add_btn_assertion = self.EL2_ASSERTION_TEXT.lower()
-        assert add_btn == add_btn_assertion
+        with allure.step(f"Добавление товара в карзину."):
+            try:
+                add_btn = self.element(self.EL2_ADD_BTN).text.lower()
+                add_btn_assertion = self.EL2_ASSERTION_TEXT.lower()
+                assert add_btn == add_btn_assertion
+            except NoSuchElementException as e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
     def product_card_add_to_wish_list(self):
-        assert self.element(self.EL3_FAVOURITE_BTN)
+        with allure.step(f"Добавление товара в список желаемого."):
+            try:
+                assert self.element(self.EL3_FAVOURITE_BTN)
+            except NoSuchElementException as e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
     def product_card_compare_btn(self):
-        assert self.element(self.EL4_COMPARE_BTN)
+        with allure.step(f"Добавление товара в список сравнения."):
+            try:
+                assert self.element(self.EL4_COMPARE_BTN)
+            except NoSuchElementException as e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)
 
     def product_card_image(self):
-        assert self.element(self.EL5_CARD_IMAGE)
+        with allure.step(f"Проверка наличия изображения в карточке товара."):
+            try:
+                assert self.element(self.EL5_CARD_IMAGE)
+            except NoSuchElementException as e:
+                allure.attach(
+                    body=self.driver.get_screenshot_as_png(),
+                    name="screenshot_image",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                raise AssertionError(e.msg)

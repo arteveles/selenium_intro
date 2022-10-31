@@ -1,7 +1,10 @@
+import allure
 from page_objects.HomePage import HomePage
 from page_objects.RegistrationPage import RegistrationPage
 
 
+@allure.title(f"Регистрация нового пользователя.")
+@allure.testcase('https://pypi.org/project/allure-pytest/', 'Test_case_name')
 def test_registration(browser):
     hp = HomePage(browser)
     rp = RegistrationPage(browser)
