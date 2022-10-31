@@ -15,11 +15,6 @@ def test_home_page_positive(driver):
     assert driver.title == "Your Store"
 
 
-def test_home_page_negative(driver):
-    driver.get(url=driver.base_url)
-    assert driver.title == "YourStore"
-
-
 def test_home_page_menu(driver):
     driver.get(url=driver.base_url)
     time.sleep(3)

@@ -16,20 +16,25 @@ from data_storage import EL_3_LOG_BTN
 
 
 def test_valid_reg(driver):
+    """Переход на страницу"""
     driver.get(url=AP_URL)
+    """Ввод имени пользователя"""
     input_un = driver.find_element(By.XPATH, EL_1_INP_USERN)
     input_un.click()
     input_un.clear()
     input_un.send_keys(EL_1_INP_UN_POSITV)
     time.sleep(1)
+    """Ввод пароля"""
     input_pv = driver.find_element(By.XPATH, EL_2_INP_PASS)
     input_pv.click()
     input_pv.clear()
     input_pv.send_keys(EL_2_INP_PASS_POSIV)
     time.sleep(1)
+    """Надатие кнопки подтвердить"""
     submit_btn = driver.find_element(By.XPATH, EL_3_LOG_BTN)
     submit_btn.click()
     time.sleep(2)
+    """Проверка авторизации пользователя"""
     verify_logout = driver.find_element(By.XPATH, EL_5_VERIFY)
     assert verify_logout.text == EL_5_VERIFY_ASSERT_TEXT
 

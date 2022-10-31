@@ -1,8 +1,9 @@
+# URLs
 URL_OPENCART = "http://10.0.2.15:8081/"
 URL_OPENCART_CATALOG = "http://10.0.2.15:8081/desktops"
 URL_MONITOR_CATALOG = "http://10.0.2.15:8081/component/monitor"
 
-# selectors home page
+# selectors home_page
 HP_MENU_ITEMS = "//div[@class='collapse navbar-collapse navbar-ex1-collapse']/ul/li"
 HP_SEARCH_INPUT = "//div[@id='search']/input"
 HP_SEARCH_BUTTON = "//div/span/button[@class='btn btn-default btn-lg']"
@@ -20,18 +21,16 @@ CATALOG_BUTTON_LIST = "//div[@class='btn-group btn-group-sm']/button[@id='list-v
 CATALOG_BTN_ADD_TO_FVT = "//div[@class='button-group']/button[2]"
 CTG_ALERT_LGN = "//div[@class='alert alert-success alert-dismissible']/child::a[@href='http://10.0.2.15:8081/index.php?route=account/login']"
 CTG_ASSERT_LGN = "login"
-
 CTG_COMPARE_BTN = "//div[@class='form-group']"
 CTG_HEADER_COMPARE = "//h1[text()='Product Comparison']"
 CTG_HEADER_CMP_ASSERT = "Product Comparison"
-
 CTG_MENU_CMPS = "//ul[@class='nav navbar-nav']/child::li[3]"
 CTG_COMPARE_ITEMS = "//ul[@class='nav navbar-nav']/child::li[3]//child::li[2]/a"
 CTG_CNT_ITEMS = "//div[@class='row'][3]/child::div"
 CTG_SORT_TEXT = "//div/label[@class='input-group-addon' and @for='input-sort']"
 CTG_ASSERTED_SORT_TEXT = "Sort By:"
 
-# product card
+# product_card
 URL_PRODUCT_CARD = "http://10.0.2.15:8081/component/monitor"
 EL1_PRODUCT_CARD = "//div[@class='product-thumb']"
 EL2_ADD_BTN = "//div[@class='button-group']/button[1]"
@@ -40,7 +39,7 @@ EL4_COMPARE_BTN = "//div[@class='button-group']/button[3]"
 EL5_CARD_IMAGE = "//div[@class='image']/a/img[@class='img-responsive']"
 EL2_ASSERTION_TEXT = "Add to Cart"
 
-# admin page as AP
+# admin_page as AP
 AP_URL = "http://10.0.2.15:8081/admin/"
 EL_1_INP_USERN = "//input[@name='username']"
 EL_1_INP_UN_POSITV = "user"
@@ -55,7 +54,7 @@ EL_4_ALERT_ASSERT_TEXT_2 = " Warning: Your account has exceeded allowed number o
 EL_5_VERIFY = "//span[@class='hidden-xs hidden-sm hidden-md']"
 EL_5_VERIFY_ASSERT_TEXT = "Logout"
 
-# registration page
+# registration_page
 REG_PAGE = "http://10.0.2.15:8081/index.php?route=account/register"
 EL_REG_FN = "//input[@name='firstname']"
 EL_REG_FN_VALUE = "test_firstname"

@@ -9,6 +9,8 @@ from data_storage import EL_REG_PASS, EL_REG_PASS_CONFIRM
 from data_storage import EL_REG_PASS_VALUE, EL_REG_PASS_CONFIRM_VALUE
 from data_storage import EL_REG_NO_RDB, EL_REG_CHBX, EL_REG_CONT_BTN
 
+"""Регистрация пользователя"""
+
 
 def test_registration(driver):
     driver.get(url=REG_PAGE)
